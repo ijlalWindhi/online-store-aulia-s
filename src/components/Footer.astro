@@ -1,0 +1,92 @@
+---
+import Logo from './Logo.astro';
+import { brand, contact, ui, type Lang } from '../data/site.ts';
+import { footer } from '../data/content.ts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<footer class="site-footer">
+	<div class="wrap grid">
+		<div>
+			<Logo variant="mono" class="footer-logo" label={brand} />
+			<p class="tagline">{ui.tagline[lang]}</p>
+			<p class="summary muted">{footer.summary[lang]}</p>
+		</div>
+		<div>
+			<h2 class="heading">{ui.contactHeading[lang]}</h2>
+			<ul class="links">
+				<li><a href={`https://wa.me/${contact.whatsapp}`}>WhatsApp {contact.whatsappDisplay}</a></li>
+				<li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+				<li><a href={contact.instagramUrl}>Instagram {contact.instagram}</a></li>
+			</ul>
+		</div>
+	</div>
+	<p class="wrap copyright muted">© {new Date().getFullYear()} {brand}</p>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: var(--space);
+		padding-block: 3rem 1.5rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	:global(main:has(> .band:last-child)) + .site-footer {
+		margin-top: 0;
+		border-top: 0;
+	}
+
+	.grid {
+		display: grid;
+		gap: 2rem 3rem;
+	}
+
+	.footer-logo {
+		width: auto;
+		height: 2rem;
+		color: var(--charcoal);
+	}
+
+	.tagline {
+		margin-top: 1rem;
+		font-family: var(--heading);
+		font-size: var(--text-md);
+	}
+
+	.summary {
+		max-width: 32rem;
+		margin-top: 0.5rem;
+	}
+
+	.heading {
+		font-size: var(--text-md);
+	}
+
+	.links {
+		margin-top: 0.5rem;
+		list-style: none;
+	}
+
+	.links a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		overflow-wrap: anywhere;
+	}
+
+	.copyright {
+		margin-top: 2.5rem;
+		font-size: var(--text-sm);
+	}
+
+	@media (min-width: 48rem) {
+		.grid {
+			grid-template-columns: 3fr 2fr;
+		}
+	}
+</style>

@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { brand, langs, nav, routes, type NavLink } from '../data/site.ts';
+import { notFound } from '../data/content.ts';
+
+const links = nav
+	.flatMap((item): NavLink[] => ('children' in item ? item.children : [item]))
+	.filter((link) => ['home', 'services', 'contact'].includes(link.page));
+const languageName = { id: 'Bahasa Indonesia', en: 'English' };
+---
+
+<Layout
+	lang="id"
+	title={`${notFound.title.id} / ${notFound.title.en} | ${brand}`}
+	description={`${notFound.description.id} ${notFound.description.en}`}
+>
+	<div class="wrap page-head">
+		<h1>
+			{`${notFound.title.id} `}
+			<span class="muted" lang="en">/ {notFound.title.en}</span>
+		</h1>
+		<div class="columns">
+			{
+				langs.map((lang) => (
+					<section lang={lang} aria-labelledby={`not-found-${lang}`}>
+						<h2 id={`not-found-${lang}`}>{languageName[lang]}</h2>
+						<p>{notFound.text[lang]}</p>
+						<p class="links-title">{notFound.links[lang]}</p>
+						<ul class="links">
+							{links.map((link) => (
+								<li>
+									<a class="text-link" href={routes[link.page][lang]}>
+										{link.label[lang]}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.columns {
+		display: grid;
+		gap: 2.5rem 4rem;
+		margin-top: 2.5rem;
+	}
+
+	section {
+		max-width: 32rem;
+		padding-top: 1.25rem;
+		border-top: 2px solid var(--charcoal);
+	}
+
+	h2 {
+		font-size: var(--text-lg);
+	}
+
+	section p {
+		margin-top: 0.75rem;
+	}
+
+	.links-title {
+		font-weight: 600;
+	}
+
+	.links {
+		margin-top: 0.25rem;
+		list-style: none;
+	}
+
+	@media (min-width: 48rem) {
+		.columns {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+</style>

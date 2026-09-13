@@ -1,0 +1,243 @@
+---
+import ServiceSummary from '../components/ServiceSummary.astro';
+import { routes, ui, whatsappUrl, type Lang } from '../data/site.ts';
+import { services, terms } from '../data/services.ts';
+import { servicesPage } from '../data/content.ts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="wrap page-head">
+	<h1>{servicesPage.title[lang]}</h1>
+	<p class="lead">{servicesPage.intro[lang]}</p>
+</div>
+
+<section class="wrap block" aria-labelledby="summary-title">
+	<h2 id="summary-title" class="summary-title">{servicesPage.summaryHeading[lang]}</h2>
+	<ServiceSummary lang={lang} services={services} />
+	<p class="note muted">
+		{`${servicesPage.orderNote[lang]} ${servicesPage.fallback[lang]} `}
+		<a href={routes.contact[lang]}>{servicesPage.fallbackLink[lang]}</a>
+	</p>
+</section>
+
+<div class="wrap block">
+	{
+		services.map((service) => {
+			const price = service.priceUnit ? `${service.startingPrice} ${service.priceUnit[lang]}` : service.startingPrice;
+			return (
+				<article id={service.slug} class="service" aria-labelledby={`${service.slug}-title`}>
+					<div>
+						<h2 id={`${service.slug}-title`}>{service.name[lang]}</h2>
+						<p class="description">{service.shortDescription[lang]}</p>
+						<p class="price">
+							<span class="price-label">{ui.startingPrice[lang]}</span>
+							<span class="price-value">{service.startingPrice}</span>
+							{service.priceUnit && <span class="muted">{service.priceUnit[lang]}</span>}
+						</p>
+						<a class="button button-primary order" href={whatsappUrl(lang, { service: service.name[lang], price })}>
+							{ui.order[lang]}
+							<span class="visually-hidden">: {service.name[lang]}</span>
+						</a>
+					</div>
+					<dl class="facts">
+						<div>
+							<dt>{ui.turnaround[lang]}</dt>
+							<dd>{service.turnaround[lang]}</dd>
+						</div>
+						<div>
+							<dt>{ui.revisions[lang]}</dt>
+							<dd>{service.revisions[lang]}</dd>
+						</div>
+						<div>
+							<dt>{ui.scope[lang]}</dt>
+							<dd>
+								<ul>
+									{service.scope.map((item) => <li>{item[lang]}</li>)}
+								</ul>
+							</dd>
+						</div>
+						<div>
+							<dt>{ui.deliverables[lang]}</dt>
+							<dd>
+								<ul>
+									{service.deliverables.map((item) => <li>{item[lang]}</li>)}
+								</ul>
+							</dd>
+						</div>
+					</dl>
+					{service.packages && (
+						<div class="packages">
+							<h3>{servicesPage.packagesHeading[lang]}</h3>
+							<ul>
+								{service.packages.map((pkg) => (
+									<li class="package">
+										<span class="package-name">{pkg.name[lang]}</span>
+										<span class="package-price">
+											<span class="muted">{ui.from[lang]}</span> {pkg.startingPrice}
+										</span>
+										<a
+											class="button"
+											href={whatsappUrl(lang, { service: service.name[lang], package: pkg.name[lang], price: pkg.startingPrice })}
+										>
+											{ui.order[lang]}
+											<span class="visually-hidden">
+												: {service.name[lang]}, {ui.packageLabel[lang]} {pkg.name[lang]}
+											</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+				</article>
+			);
+		})
+	}
+</div>
+
+<section class="band" aria-labelledby="terms-title">
+	<div class="wrap">
+		<h2 id="terms-title">{servicesPage.termsHeading[lang]}</h2>
+		<ul class="bullets terms">
+			{terms.map((term) => <li>{term[lang]}</li>)}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.summary-title {
+		margin-bottom: 1rem;
+		font-size: var(--text-md);
+	}
+
+	.note {
+		max-width: var(--measure);
+		margin-top: 1.25rem;
+	}
+
+	.service {
+		display: grid;
+		gap: 2rem 4rem;
+		padding-block: 2.5rem;
+		border-top: 2px solid var(--charcoal);
+	}
+
+	.description {
+		max-width: 32rem;
+		margin-top: 0.75rem;
+	}
+
+	.price {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 0.5rem;
+		margin-top: 1.25rem;
+	}
+
+	.price-label {
+		flex-basis: 100%;
+		color: var(--muted);
+		font-size: var(--text-sm);
+	}
+
+	.price-value {
+		font-family: var(--heading);
+		font-size: var(--text-xl);
+		font-variant-numeric: lining-nums;
+	}
+
+	.order {
+		margin-top: 1.25rem;
+	}
+
+	.facts {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+		align-content: start;
+		gap: 1.25rem 2rem;
+	}
+
+	.facts > div {
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.facts dt {
+		color: var(--muted);
+		font-size: var(--text-sm);
+	}
+
+	.facts ul {
+		list-style: none;
+	}
+
+	.packages {
+		grid-column: 1 / -1;
+	}
+
+	.packages ul {
+		margin-top: 0.75rem;
+		list-style: none;
+	}
+
+	.package {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 0.5rem 1.5rem;
+		padding-block: 1rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.package-name {
+		font-weight: 600;
+	}
+
+	.package-price {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+	}
+
+	.package .button {
+		grid-column: 1 / -1;
+		justify-self: start;
+	}
+
+	@media (min-width: 48rem) {
+		.package {
+			grid-template-columns: minmax(0, 1fr) auto auto;
+		}
+
+		.package .button {
+			grid-column: auto;
+		}
+	}
+
+	@media (min-width: 60rem) {
+		.service {
+			grid-template-columns: 5fr 6fr;
+		}
+	}
+
+	.terms {
+		max-width: 60rem;
+		margin-top: 1.5rem;
+	}
+
+	@media (min-width: 60rem) {
+		.terms {
+			columns: 2;
+			column-gap: 4rem;
+		}
+
+		.terms li {
+			break-inside: avoid;
+		}
+	}
+</style>

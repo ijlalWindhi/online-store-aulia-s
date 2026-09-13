@@ -1,0 +1,197 @@
+---
+import Logo from '../components/Logo.astro';
+import { brand, type Lang } from '../data/site.ts';
+import { about } from '../data/content.ts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="wrap page-head">
+	<h1>{about.title[lang]}</h1>
+	<p class="lead">{about.intro[lang]}</p>
+	<p class="muted location">{about.location[lang]}</p>
+</div>
+
+<section class="wrap block split" aria-labelledby="name-title">
+	<h2 id="name-title">{about.name.heading[lang]}</h2>
+	<p class="prose">{about.name.text[lang]}</p>
+</section>
+
+<section class="wrap block dian" aria-labelledby="dian-title">
+	<p class="dian-glyph" aria-hidden="true">店</p>
+	<div class="prose">
+		<h2 id="dian-title">{about.dian.heading[lang]}</h2>
+		<p class="reading">
+			<span lang="zh-Latn-pinyin">diàn</span>
+			<span class="muted">{about.dian.meaning[lang]}</span>
+		</p>
+		<p>{about.dian.text[lang]}</p>
+		<h3 class="study-title">{about.study.heading[lang]}</h3>
+		<p>{about.study.text[lang]}</p>
+	</div>
+</section>
+
+<section class="wrap block" aria-labelledby="logo-title">
+	<div class="split">
+		<h2 id="logo-title">{about.logo.heading[lang]}</h2>
+		<div class="prose">
+			{about.logo.text.map((paragraph) => <p>{paragraph[lang]}</p>)}
+		</div>
+	</div>
+	<ul class="variants">
+		<li class="variant-full">
+			<div class="stage"><Logo class="logo-full" label={brand} /></div>
+			<p>{about.logo.full[lang]}</p>
+		</li>
+		<li>
+			<div class="stage"><Logo variant="mark" class="logo-mark" label="店" /></div>
+			<p>{about.logo.mark[lang]}</p>
+		</li>
+		<li>
+			<div class="stage"><Logo variant="mono" class="logo-mono" label={brand} /></div>
+			<p>{about.logo.mono[lang]}</p>
+		</li>
+	</ul>
+</section>
+
+<section class="wrap block split" aria-labelledby="goal-title">
+	<h2 id="goal-title">{about.goal.heading[lang]}</h2>
+	<p class="prose">{about.goal.text[lang]}</p>
+</section>
+
+<section class="band" aria-labelledby="vm-title">
+	<div class="wrap">
+		<h2 id="vm-title">{about.visionMission[lang]}</h2>
+		<div class="vm">
+			<div>
+				<h3>{about.vision.heading[lang]}</h3>
+				<p class="vision">{about.vision.text[lang]}</p>
+			</div>
+			<div>
+				<h3>{about.mission.heading[lang]}</h3>
+				<ol class="steps mission">
+					{about.mission.items.map((item) => <li>{item[lang]}</li>)}
+				</ol>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.location {
+		margin-top: 0.75rem;
+	}
+
+	.dian {
+		display: grid;
+		gap: 1rem 4rem;
+		align-items: center;
+	}
+
+	.dian-glyph {
+		color: var(--vermilion);
+		font-family: var(--font-dian), serif;
+		font-size: clamp(8rem, 5rem + 16vw, 17rem);
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.reading {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 1rem;
+		font-family: var(--heading);
+		font-size: var(--text-xl);
+	}
+
+	.study-title {
+		margin-top: 2rem;
+	}
+
+	@media (min-width: 48rem) {
+		.dian {
+			grid-template-columns: auto minmax(0, 1fr);
+		}
+	}
+
+	.variants {
+		display: grid;
+		gap: 1.5rem;
+		margin-top: 2.5rem;
+		list-style: none;
+	}
+
+	.stage {
+		display: grid;
+		place-items: center;
+		min-height: 11rem;
+		padding: 2rem;
+		background: var(--paper);
+	}
+
+	.variants p {
+		margin-top: 0.75rem;
+		color: var(--muted);
+	}
+
+	.logo-full,
+	.logo-mono {
+		width: min(100%, 17rem);
+		height: auto;
+	}
+
+	.logo-mono {
+		color: var(--charcoal);
+	}
+
+	.logo-mark {
+		width: 5.5rem;
+		height: 5.5rem;
+	}
+
+	@media (min-width: 48rem) {
+		.variants {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.variant-full {
+			grid-column: 1 / -1;
+		}
+
+		.variant-full .logo-full {
+			width: min(100%, 26rem);
+		}
+	}
+
+	.vm {
+		display: grid;
+		gap: 2.5rem 4rem;
+		margin-top: 2rem;
+	}
+
+	.vision {
+		margin-top: 0.75rem;
+		font-family: var(--heading);
+		font-size: var(--text-xl);
+		line-height: 1.3;
+	}
+
+	.mission {
+		margin-top: 1rem;
+	}
+
+	.mission li + li {
+		margin-top: 1rem;
+	}
+
+	@media (min-width: 60rem) {
+		.vm {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+</style>

@@ -1,0 +1,321 @@
+/* Modern Mandarin system (PRD §14). ENERGY 2, RHYTHM 2, MOTION 1. Fixed light theme. */
+:root {
+	--ivory: #f6f0e7;
+	--paper: #ede4d6; /* muted text 5.44:1, vermilion 4.72:1 */
+	--charcoal: #211c18;
+	--muted: #625950;
+	--vermilion: #b23a2b;
+	--vermilion-dark: #962f22;
+	--rule: #d5c7b3;
+
+	/* 店 is listed first so it always renders in Noto Serif SC; the font only contains that glyph. */
+	--heading: var(--font-dian), var(--font-heading);
+	--body: var(--font-dian), var(--font-body);
+
+	--text-sm: 1rem;
+	--text-base: 1.125rem;
+	--text-md: 1.3125rem;
+	--text-lg: 1.5rem;
+	--text-xl: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+	--text-2xl: clamp(2.25rem, 1.7rem + 2.4vw, 3.5rem);
+	--text-hero: clamp(2.75rem, 1.5rem + 5.4vw, 5.75rem);
+
+	--gutter: clamp(1rem, 4vw, 3rem);
+	--wide: 76rem;
+	--measure: 40rem;
+	--space: clamp(3.5rem, 2rem + 6vw, 7rem);
+
+	color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--ivory);
+	color: var(--charcoal);
+	font-family: var(--body);
+	font-size: var(--text-base);
+	line-height: 1.6;
+	overflow-wrap: break-word;
+}
+
+img,
+svg {
+	display: block;
+	max-width: 100%;
+}
+
+img {
+	height: auto;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	font-family: var(--heading);
+	font-weight: 500;
+	line-height: 1.15;
+	text-wrap: balance;
+}
+
+h1 {
+	font-size: var(--text-2xl);
+	letter-spacing: -0.015em;
+}
+
+h2 {
+	font-size: var(--text-xl);
+	letter-spacing: -0.01em;
+}
+
+h3 {
+	font-size: var(--text-md);
+	line-height: 1.3;
+}
+
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+	margin: 0;
+}
+
+ul,
+ol {
+	padding: 0;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+a {
+	color: inherit;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+}
+
+a:hover {
+	color: var(--vermilion);
+}
+
+:focus-visible {
+	outline: 3px solid var(--vermilion);
+	outline-offset: 3px;
+}
+
+main:focus {
+	outline: none;
+}
+
+[id] {
+	scroll-margin-top: 1.5rem;
+}
+
+.skip-link {
+	position: absolute;
+	top: 0.5rem;
+	left: var(--gutter);
+	z-index: 100;
+	padding: 0.75rem 1rem;
+	background: var(--charcoal);
+	color: var(--ivory);
+	font-weight: 600;
+	text-decoration: none;
+	transform: translateY(-200%);
+}
+
+.skip-link:focus {
+	transform: none;
+}
+
+.skip-link:hover {
+	color: var(--ivory);
+}
+
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Layout */
+.wrap {
+	width: 100%;
+	max-width: calc(var(--wide) + 2 * var(--gutter));
+	margin-inline: auto;
+	padding-inline: var(--gutter);
+}
+
+.block {
+	margin-top: var(--space);
+}
+
+.band {
+	margin-top: var(--space);
+	padding-block: var(--space);
+	background: var(--paper);
+}
+
+/* Heading column beside a content column on wide screens. */
+.split {
+	display: grid;
+	align-items: start;
+	gap: 1rem 4rem;
+}
+
+@media (min-width: 60rem) {
+	.split {
+		grid-template-columns: 4fr 7fr;
+	}
+}
+
+.page-head {
+	padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+}
+
+.lead {
+	max-width: var(--measure);
+	margin-top: 1.25rem;
+	font-size: var(--text-md);
+	line-height: 1.55;
+}
+
+.prose {
+	max-width: var(--measure);
+}
+
+.prose > * + * {
+	margin-top: 1rem;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.bullets {
+	padding-left: 1.25rem;
+}
+
+.bullets li + li {
+	margin-top: 0.5rem;
+}
+
+.bullets li::marker {
+	color: var(--muted);
+}
+
+/* Actions */
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1rem;
+}
+
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 100%;
+	min-height: 3rem;
+	padding: 0.625rem 1.375rem;
+	border: 2px solid var(--charcoal);
+	background: transparent;
+	color: var(--charcoal);
+	font: 600 var(--text-base) / 1.25 var(--body);
+	text-align: center;
+	text-decoration: none;
+	transition:
+		background-color 120ms ease,
+		border-color 120ms ease,
+		color 120ms ease;
+}
+
+.button:hover {
+	background: var(--charcoal);
+	color: var(--ivory);
+}
+
+.button-primary {
+	border-color: var(--vermilion);
+	background: var(--vermilion);
+	color: #fff;
+}
+
+.button-primary:hover {
+	border-color: var(--vermilion-dark);
+	background: var(--vermilion-dark);
+	color: #fff;
+}
+
+/* Standalone text links keep a 44px target. */
+.text-link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	font-weight: 600;
+}
+
+/* Concept Project label: the clipped corner repeats the 店 module. */
+.concept-label {
+	display: inline-block;
+	padding: 0.25rem 0.875rem 0.25rem 0.625rem;
+	background: var(--charcoal);
+	color: var(--ivory);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	line-height: 1.4;
+	clip-path: polygon(0 0, calc(100% - 0.5rem) 0, 100% 0.5rem, 100% 100%, 0 100%);
+}
+
+.steps {
+	list-style: none;
+	counter-reset: step;
+}
+
+.steps > li {
+	counter-increment: step;
+	position: relative;
+	padding-left: 3rem;
+}
+
+.steps > li::before {
+	content: counter(step);
+	position: absolute;
+	top: -0.2em;
+	left: 0;
+	font-family: var(--heading);
+	font-size: var(--text-lg);
+	font-variant-numeric: lining-nums;
+	line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
+		scroll-behavior: auto !important;
+	}
+}

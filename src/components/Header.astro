@@ -1,0 +1,290 @@
+---
+import Logo from './Logo.astro';
+import { brand, nav, routes, ui, type Lang, type PageKey } from '../data/site.ts';
+
+interface Props {
+	lang: Lang;
+	/** Without a page (404) the header shows only the logo. */
+	page?: PageKey;
+}
+
+const { lang, page } = Astro.props;
+const other: Lang = lang === 'id' ? 'en' : 'id';
+const current = (key: PageKey) => (key === page ? 'page' : undefined);
+---
+
+<header class="site-header">
+	<div class="wrap bar">
+		<a class="brand" href={routes.home[lang]}>
+			<Logo class="brand-logo" label={`${brand}, ${ui.home[lang]}`} />
+		</a>
+		{
+			page && (
+				<>
+					<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+						{ui.menu[lang]}
+					</button>
+					<nav id="site-nav" class="site-nav" aria-label={ui.mainNav[lang]}>
+						<ul class="nav-list">
+							{nav.map((item, i) =>
+								'children' in item ? (
+									<li class="nav-group">
+										<button
+											class="sub-toggle"
+											type="button"
+											aria-expanded="false"
+											aria-controls={`nav-group-${i}`}
+											data-current={item.children.some((child) => child.page === page) ? '' : undefined}
+										>
+											{item.label[lang]}
+										</button>
+										<span class="sub-label">{item.label[lang]}</span>
+										<ul id={`nav-group-${i}`} class="sub-list">
+											{item.children.map((child) => (
+												<li>
+													<a href={routes[child.page][lang]} aria-current={current(child.page)}>
+														{child.label[lang]}
+													</a>
+												</li>
+											))}
+										</ul>
+									</li>
+								) : (
+									<li>
+										<a href={routes[item.page][lang]} aria-current={current(item.page)}>
+											{item.label[lang]}
+										</a>
+									</li>
+								),
+							)}
+							<li class="lang-item">
+								<a href={routes[page][other]} hreflang={other} lang={other}>
+									{ui.otherLanguage[lang]}
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</>
+			)
+		}
+	</div>
+</header>
+
+<script>
+	const menuToggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+	const siteNav = document.getElementById('site-nav');
+	const subToggles = [...document.querySelectorAll<HTMLButtonElement>('.sub-toggle')];
+
+	const isOpen = (button: HTMLButtonElement) => button.getAttribute('aria-expanded') === 'true';
+	const setOpen = (button: HTMLButtonElement, open: boolean) => button.setAttribute('aria-expanded', String(open));
+
+	menuToggle?.addEventListener('click', () => setOpen(menuToggle, !isOpen(menuToggle)));
+
+	for (const toggle of subToggles) {
+		const group = toggle.parentElement!;
+		toggle.addEventListener('click', () => setOpen(toggle, !isOpen(toggle)));
+		// Close when keyboard focus moves to another element outside the group.
+		group.addEventListener('focusout', (event) => {
+			const next = event.relatedTarget as Node | null;
+			if (next && !group.contains(next)) setOpen(toggle, false);
+		});
+	}
+
+	document.addEventListener('click', (event) => {
+		for (const toggle of subToggles) {
+			if (!toggle.parentElement!.contains(event.target as Node)) setOpen(toggle, false);
+		}
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape') return;
+		const active = document.activeElement;
+		const openSub = subToggles.find(isOpen);
+		if (openSub) {
+			setOpen(openSub, false);
+			if (openSub.parentElement!.contains(active)) openSub.focus();
+			return;
+		}
+		if (menuToggle && isOpen(menuToggle)) {
+			setOpen(menuToggle, false);
+			if (active === menuToggle || siteNav?.contains(active)) menuToggle.focus();
+		}
+	});
+</script>
+
+<style>
+	.site-header {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.bar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0 1.5rem;
+		min-height: 4.75rem;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		padding-block: 0.75rem;
+	}
+
+	.brand-logo {
+		width: auto;
+		height: 2.25rem;
+	}
+
+	.menu-toggle {
+		min-width: 2.75rem;
+		min-height: 2.75rem;
+		padding: 0.5rem 1.125rem;
+		border: 2px solid var(--charcoal);
+		background: transparent;
+		color: var(--charcoal);
+		font: 600 var(--text-base) / 1 var(--body);
+		cursor: pointer;
+	}
+
+	.menu-toggle[aria-expanded='true'] {
+		background: var(--charcoal);
+		color: var(--ivory);
+	}
+
+	.site-nav {
+		flex-basis: 100%;
+	}
+
+	.nav-list {
+		margin: 0;
+		padding: 0.25rem 0 1rem;
+		border-top: 1px solid var(--rule);
+		list-style: none;
+	}
+
+	.nav-list a,
+	.sub-toggle,
+	.sub-label {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		min-height: 2.75rem;
+		padding: 0.375rem 0;
+		text-decoration: none;
+	}
+
+	.nav-list a[aria-current='page'],
+	.sub-toggle[data-current] {
+		text-decoration: underline 2px var(--vermilion);
+		text-underline-offset: 0.45em;
+	}
+
+	.sub-toggle {
+		gap: 0.625rem;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.sub-toggle::after {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: translateY(-25%) rotate(45deg);
+		transition: transform 120ms ease;
+	}
+
+	.sub-toggle[aria-expanded='true']::after {
+		transform: translateY(20%) rotate(-135deg);
+	}
+
+	.sub-list {
+		margin: 0 0 0.25rem;
+		padding: 0 0 0 1rem;
+		border-left: 2px solid var(--rule);
+		list-style: none;
+	}
+
+	.lang-item {
+		margin-top: 0.5rem;
+		padding-top: 0.5rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	/* Progressive enhancement: without JavaScript every link stays visible. */
+	:global(html:not(.js)) .menu-toggle,
+	:global(html:not(.js)) .sub-toggle,
+	:global(html.js) .sub-label {
+		display: none;
+	}
+
+	:global(html.js) .menu-toggle[aria-expanded='false'] + .site-nav,
+	:global(html.js) .sub-toggle[aria-expanded='false'] ~ .sub-list {
+		display: none;
+	}
+
+	@media (min-width: 68rem) {
+		.bar {
+			flex-wrap: nowrap;
+		}
+
+		.menu-toggle {
+			display: none;
+		}
+
+		.site-nav,
+		:global(html.js) .menu-toggle[aria-expanded='false'] + .site-nav {
+			display: block;
+			flex-basis: auto;
+		}
+
+		.nav-list {
+			display: flex;
+			align-items: center;
+			gap: 0 1.375rem;
+			padding: 0;
+			border: 0;
+		}
+
+		.nav-list a,
+		.sub-toggle,
+		.sub-label {
+			width: auto;
+		}
+
+		.nav-group {
+			position: relative;
+		}
+
+		.sub-list {
+			position: absolute;
+			top: calc(100% + 0.5rem);
+			left: -1rem;
+			z-index: 20;
+			min-width: 15rem;
+			margin: 0;
+			padding: 0.375rem 1rem;
+			border: 1px solid var(--charcoal);
+			background: var(--ivory);
+		}
+
+		:global(html:not(.js)) .nav-group:not(:hover, :focus-within) .sub-list {
+			display: none;
+		}
+
+		.lang-item {
+			margin: 0;
+			padding: 0 0 0 1.375rem;
+			border-top: 0;
+			border-left: 1px solid var(--rule);
+		}
+	}
+</style>

@@ -1,0 +1,119 @@
+---
+import type { Lang } from '../data/site.ts';
+import { customerExperience as cx } from '../data/content.ts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="wrap page-head">
+	<h1>{cx.title[lang]}</h1>
+	<p class="lead">{cx.intro[lang]}</p>
+</div>
+
+<div class="wrap block research">
+	<div class="profile">
+		<section aria-labelledby="respondent-title">
+			<h2 id="respondent-title">{cx.respondent.heading[lang]}</h2>
+			<dl class="respondent">
+				{
+					cx.respondent.rows.map((row) => (
+						<div>
+							<dt>{row.term[lang]}</dt>
+							<dd>{row.value[lang]}</dd>
+						</div>
+					))
+				}
+			</dl>
+		</section>
+		<section class="method" aria-labelledby="method-title">
+			<h2 id="method-title">{cx.method.heading[lang]}</h2>
+			<p>{cx.method.text[lang]}</p>
+		</section>
+	</div>
+
+	<section aria-labelledby="findings-title">
+		<h2 id="findings-title">{cx.findingsHeading[lang]}</h2>
+		{
+			cx.findings.map((finding) => (
+				<section class="finding">
+					<h3>{finding.heading[lang]}</h3>
+					<p>{finding.text[lang]}</p>
+				</section>
+			))
+		}
+	</section>
+</div>
+
+<section class="band" aria-labelledby="conclusion-title">
+	<div class="wrap split">
+		<h2 id="conclusion-title">{cx.conclusion.heading[lang]}</h2>
+		<p class="conclusion">{cx.conclusion.text[lang]}</p>
+	</div>
+</section>
+
+<style>
+	.research {
+		display: grid;
+		gap: 3rem 5rem;
+		align-items: start;
+	}
+
+	.profile {
+		padding: 1.5rem;
+		border: 1px solid var(--charcoal);
+	}
+
+	.profile h2 {
+		font-size: var(--text-lg);
+	}
+
+	.respondent {
+		margin-top: 1rem;
+	}
+
+	.respondent > div + div {
+		margin-top: 1rem;
+	}
+
+	.respondent dt {
+		color: var(--muted);
+		font-size: var(--text-sm);
+	}
+
+	.method {
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.method p {
+		margin-top: 0.5rem;
+	}
+
+	.finding {
+		max-width: var(--measure);
+		margin-top: 2rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.finding p {
+		margin-top: 0.5rem;
+	}
+
+	.conclusion {
+		max-width: var(--measure);
+		font-size: var(--text-md);
+		line-height: 1.55;
+	}
+
+	@media (min-width: 60rem) {
+		.research {
+			grid-template-columns: 4fr 7fr;
+		}
+	}
+</style>

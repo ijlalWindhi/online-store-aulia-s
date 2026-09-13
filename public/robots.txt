@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aulia-putri.store/sitemap.xml

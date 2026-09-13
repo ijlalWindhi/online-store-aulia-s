@@ -1,0 +1,104 @@
+---
+import { contact, ui, whatsappUrl, type Lang } from '../data/site.ts';
+import { contactPage } from '../data/content.ts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="wrap page-head">
+	<h1>{contactPage.title[lang]}</h1>
+	<p class="lead">{contactPage.intro[lang]}</p>
+</div>
+
+<div class="wrap block">
+	<dl class="channels">
+		<div>
+			<dt>WhatsApp</dt>
+			<dd><a class="value" href={`https://wa.me/${contact.whatsapp}`}>{contact.whatsappDisplay}</a></dd>
+		</div>
+		<div>
+			<dt>Email</dt>
+			<dd><a class="value" href={`mailto:${contact.email}`}>{contact.email}</a></dd>
+		</div>
+		<div>
+			<dt>Instagram</dt>
+			<dd><a class="value" href={contact.instagramUrl}>{contact.instagram}</a></dd>
+		</div>
+		<div>
+			<dt>{ui.region[lang]}</dt>
+			<dd>{contact.region[lang]}</dd>
+		</div>
+		<div>
+			<dt>{ui.serviceModel[lang]}</dt>
+			<dd>{contactPage.online[lang]}</dd>
+		</div>
+	</dl>
+</div>
+
+<section class="band" aria-labelledby="consult-title">
+	<div class="wrap">
+		<h2 id="consult-title">{contactPage.ctaHeading[lang]}</h2>
+		<p class="cta-text">{contactPage.ctaText[lang]}</p>
+		<div class="actions cta-actions">
+			<a class="button button-primary" href={whatsappUrl(lang)}>{ui.consult[lang]}</a>
+		</div>
+		<p class="muted fallback">{contactPage.fallback[lang]}</p>
+	</div>
+</section>
+
+<style>
+	.channels {
+		display: grid;
+		border-top: 2px solid var(--charcoal);
+	}
+
+	.channels > div {
+		display: grid;
+		gap: 0.25rem 2rem;
+		padding-block: 1.25rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.channels dt {
+		color: var(--muted);
+	}
+
+	.channels dd {
+		max-width: var(--measure);
+	}
+
+	.value {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		font-family: var(--heading);
+		font-size: var(--text-xl);
+		line-height: 1.2;
+		overflow-wrap: anywhere;
+	}
+
+	@media (min-width: 48rem) {
+		.channels > div {
+			grid-template-columns: 14rem minmax(0, 1fr);
+			align-items: baseline;
+		}
+	}
+
+	.cta-text {
+		max-width: var(--measure);
+		margin-top: 1rem;
+	}
+
+	.cta-actions {
+		margin-top: 1.5rem;
+	}
+
+	.fallback {
+		max-width: var(--measure);
+		margin-top: 1.5rem;
+	}
+</style>
