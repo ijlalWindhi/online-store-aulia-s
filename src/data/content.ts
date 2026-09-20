@@ -22,6 +22,13 @@ export const meta: Record<PageKey, { title: T; description: T }> = {
 			en: 'Seven design and website services with starting prices, scope, turnaround, revisions, deliverables, and WhatsApp ordering.',
 		},
 	},
+	dashboard: {
+		title: { id: 'Dashboard Layanan | Aulia’s 店', en: 'Service Dashboard | Aulia’s 店' },
+		description: {
+			id: 'Bandingkan tujuh layanan Aulia’s 店 menurut jenis pekerjaan dan batas harga mulai, lengkap dengan estimasi, revisi, cakupan, dan hasil.',
+			en: 'Compare the seven Aulia’s 店 services by type of work and starting-price limit, with turnaround, revisions, scope, and deliverables.',
+		},
+	},
 	portfolio: {
 		title: { id: 'Portofolio Concept Project | Aulia’s 店', en: 'Concept Project Portfolio | Aulia’s 店' },
 		description: {
@@ -524,6 +531,69 @@ export const contactPage = {
 	},
 };
 
+export const dashboardPage = {
+	eyebrow: { id: 'Perbandingan layanan', en: 'Service comparison' },
+	title: { id: 'Bandingkan layanan sesuai kebutuhanmu', en: 'Compare services for your needs' },
+	intro: {
+		id: 'Semua layanan saya ada di satu halaman ini, lengkap dengan harga mulai, estimasi pengerjaan, jumlah revisi, cakupan, dan berkas yang kamu terima. Saring menurut jenis pekerjaan dan batas harga mulai, lalu lanjutkan ke WhatsApp.',
+		en: 'Every service I offer sits on this one page, with its starting price, turnaround estimate, revision rounds, scope, and the files you receive. Filter by type of work and a starting-price limit, then continue on WhatsApp.',
+	},
+	filterHeading: { id: 'Saring layanan', en: 'Filter services' },
+	categoryLabel: { id: 'Jenis pekerjaan', en: 'Type of work' },
+	budgetLabel: { id: 'Batas harga mulai', en: 'Starting price limit' },
+	categories: {
+		all: { id: 'Semua jenis', en: 'All types' },
+		'graphic-design': { id: 'Desain grafis', en: 'Graphic design' },
+		'ui-ux': { id: 'UI/UX', en: 'UI/UX' },
+		website: { id: 'Website', en: 'Website' },
+	},
+	budgetAll: { id: 'Tanpa batas', en: 'No limit' },
+	/** Thresholds sit between the real PRD §8 starting prices so every step changes the result. */
+	budgetOptions: [
+		{ value: 100000, label: { id: 'Sampai Rp100.000', en: 'Up to Rp100.000' } },
+		{ value: 500000, label: { id: 'Sampai Rp500.000', en: 'Up to Rp500.000' } },
+		{ value: 1000000, label: { id: 'Sampai Rp1.000.000', en: 'Up to Rp1.000.000' } },
+		{ value: 2000000, label: { id: 'Sampai Rp2.000.000', en: 'Up to Rp2.000.000' } },
+	],
+	count: {
+		one: { id: 'Menampilkan {n} layanan dari {total}.', en: 'Showing {n} service of {total}.' },
+		other: { id: 'Menampilkan {n} layanan dari {total}.', en: 'Showing {n} services of {total}.' },
+	},
+	priceFigure: {
+		title: { id: 'Perbandingan harga mulai', en: 'Starting price comparison' },
+		text: {
+			id: 'Panjang batang mengikuti harga mulai setiap layanan. Angka lengkapnya tertulis di sebelahnya.',
+			en: 'Each bar follows the starting price of a service. The exact figure is written beside it.',
+		},
+	},
+	turnaroundFigure: {
+		title: { id: 'Perbandingan estimasi pengerjaan', en: 'Turnaround comparison' },
+		text: {
+			id: 'Batang menunjukkan rentang hari tercepat sampai terlama, dihitung sejak materi dan DP saya terima.',
+			en: 'Each bar shows the fastest to longest day range, counted from the moment I receive your materials and down payment.',
+		},
+	},
+	ledger: {
+		title: { id: 'Rincian setiap layanan', en: 'Every service in detail' },
+		details: { id: 'Lihat cakupan dan hasil', en: 'See the scope and deliverables' },
+		servicesLink: { id: 'Lihat halaman Layanan untuk paket dan ketentuan', en: 'Open the Services page for packages and terms' },
+	},
+	empty: {
+		title: { id: 'Belum ada layanan yang cocok', en: 'No service fits yet' },
+		text: {
+			id: 'Kombinasi jenis pekerjaan dan batas harga ini belum ada isinya. Naikkan batas harganya, atau tanyakan kebutuhanmu lewat WhatsApp.',
+			en: 'Nothing sits inside this combination of work type and price limit. Raise the limit, or tell me what you need on WhatsApp.',
+		},
+		reset: { id: 'Tampilkan semua layanan', en: 'Show every service' },
+	},
+	next: {
+		text: {
+			id: 'Setelah memilih layanan, percakapan berlanjut lewat WhatsApp dengan nama layanan dan harga mulai yang sudah terisi.',
+			en: 'Once you pick a service, the conversation continues on WhatsApp with the service name and starting price already filled in.',
+		},
+	},
+};
+
 export const notFound = {
 	title: { id: 'Halaman tidak ditemukan', en: 'Page not found' },
 	text: {
@@ -538,6 +608,6 @@ export const notFound = {
 };
 
 assertBilingual(
-	{ meta, ogImageAlt, footer, home, about, servicesPage, portfolioPage, projects, customerExperience, brandExperience, contactPage, notFound },
+	{ meta, ogImageAlt, footer, home, about, servicesPage, portfolioPage, projects, customerExperience, brandExperience, contactPage, dashboardPage, notFound },
 	'content',
 );

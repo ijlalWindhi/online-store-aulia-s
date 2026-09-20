@@ -146,6 +146,14 @@ main:focus {
 	color: var(--ivory);
 }
 
+/*
+ * A class that sets `display` beats the user agent rule for the hidden attribute,
+ * which would leave a hidden row painted. Scripts here toggle `hidden`, so it wins.
+ */
+[hidden] {
+	display: none !important;
+}
+
 .visually-hidden {
 	position: absolute !important;
 	width: 1px;

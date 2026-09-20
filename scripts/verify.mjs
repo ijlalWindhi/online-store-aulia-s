@@ -1,6 +1,6 @@
 // Post-build check of dist/ against the PRD. Run `pnpm build && pnpm verify`.
 // The expected WhatsApp messages and prices are written out here on purpose, independent of the site code.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { langs, routes, contact } from '../src/data/site.ts';
 import { services } from '../src/data/services.ts';
 import { projects } from '../src/data/content.ts';
@@ -26,6 +26,9 @@ const PRD_PRICES = {
 	catalog: 'Rp2.000.000',
 };
 const PRD_PACKAGES = { five: 'Rp175.000', ten: 'Rp325.000' };
+
+/** Opening line of an order message, used to separate order CTAs from the general consultation link. */
+const opener = { id: 'Halo Aulia, saya tertarik memesan', en: 'Hello Aulia, I am interested in ordering' };
 
 const template = {
 	id: (service, price, pkg) =>
@@ -80,7 +83,8 @@ for (const [page, paths] of Object.entries(routes)) {
 			}
 		}
 
-		if (page === 'services') {
+		// Both pages must open the same approved message for every service, so they are checked the same way.
+		if (page === 'services' || page === 'dashboard') {
 			const messages = anchors
 				.map((a) => decode(attr(a, 'href') ?? ''))
 				.filter((href) => href.startsWith('https://wa.me/6281334666364?text='))
@@ -90,13 +94,34 @@ for (const [page, paths] of Object.entries(routes)) {
 				const price = service.priceUnit ? `${PRD_PRICES[service.slug]} ${service.priceUnit[lang]}` : PRD_PRICES[service.slug];
 				const expected = template[lang](service.name[lang], price).filter(Boolean).join('\n');
 				check(messages.includes(expected), `${path}: no WhatsApp CTA with message for ${service.slug}`);
-				for (const pkg of service.packages ?? []) {
-					check(pkg.startingPrice === PRD_PACKAGES[pkg.slug], `${pkg.slug}: package price differs from PRD`);
-					const expectedPkg = template[lang](service.name[lang], PRD_PACKAGES[pkg.slug], pkg.name[lang]).join('\n');
-					check(messages.includes(expectedPkg), `${path}: no WhatsApp CTA for package ${pkg.slug}`);
+				if (page === 'services') {
+					for (const pkg of service.packages ?? []) {
+						check(pkg.startingPrice === PRD_PACKAGES[pkg.slug], `${pkg.slug}: package price differs from PRD`);
+						const expectedPkg = template[lang](service.name[lang], PRD_PACKAGES[pkg.slug], pkg.name[lang]).join('\n');
+						check(messages.includes(expectedPkg), `${path}: no WhatsApp CTA for package ${pkg.slug}`);
+					}
 				}
 			}
-			check(messages.length === 9, `${path}: expected 9 order CTAs, found ${messages.length}`);
+			const orders = messages.filter((message) => message.startsWith(opener[lang]));
+			const expectedOrders = page === 'services' ? 9 : services.length;
+			check(orders.length === expectedOrders, `${path}: expected ${expectedOrders} order CTAs, found ${orders.length}`);
+		}
+
+		if (page === 'dashboard') {
+			// Filters and the empty state must not be visible before the script runs.
+			check(/<fieldset[^>]*id="dashboard-filters"[^>]*\shidden/.test(html), `${path}: filters are not hidden in the static output`);
+			check(/id="dashboard-empty"[^>]*\shidden/.test(html), `${path}: empty state is not hidden in the static output`);
+			for (const service of services) {
+				const marks = html.match(new RegExp(`data-service="${service.slug}"`, 'g')) ?? [];
+				check(marks.length === 3, `${path}: ${service.slug} has ${marks.length} filterable representations, expected 3`);
+				check(
+					html.includes(`data-service="${service.slug}" data-category="${service.category}" data-price="${service.startingPriceValue}"`),
+					`${path}: ${service.slug} comparison data attributes do not match the service data`,
+				);
+				check(html.includes(service.startingPrice), `${path}: ${service.slug} starting price is not printed`);
+				check(html.includes(service.turnaround[lang]), `${path}: ${service.slug} turnaround is not printed`);
+				check(html.includes(service.revisions[lang]), `${path}: ${service.slug} revisions are not printed`);
+			}
 		}
 
 		if (page === 'home' || page === 'portfolio') {
@@ -117,11 +142,19 @@ for (const [page, paths] of Object.entries(routes)) {
 for (const file of ['404.html', 'sitemap.xml', 'robots.txt', 'favicon.svg', 'favicon.ico', 'og.png']) {
 	check(existsSync(new URL(file, dist)), `dist/${file} is missing`);
 }
+// The dashboard hides rows with the hidden attribute, which a class that sets display would beat.
+const css = readdirSync(new URL('_astro/', dist))
+	.filter((file) => file.endsWith('.css'))
+	.map((file) => readFileSync(new URL(`_astro/${file}`, dist), 'utf8'))
+	.join('');
+check(/\[hidden\]\{display:none!important\}/.test(css), 'global.css must keep [hidden] { display: none !important }');
+
+const routeCount = Object.keys(routes).length * langs.length;
 const sitemap = readFileSync(new URL('sitemap.xml', dist), 'utf8');
-check((sitemap.match(/<loc>/g) ?? []).length === 14, 'sitemap.xml should list 14 URLs');
+check((sitemap.match(/<loc>/g) ?? []).length === routeCount, `sitemap.xml should list ${routeCount} URLs`);
 
 if (failures.length) {
 	console.error(`verify: ${failures.length} failure(s)\n- ${failures.join('\n- ')}`);
 	process.exit(1);
 }
-console.log(`verify: 14 routes, 404, sitemap, links, hreflang, switchers, and ${services.length} services with packages passed`);
+console.log(`verify: ${routeCount} routes, 404, sitemap, links, hreflang, switchers, and ${services.length} services with packages passed`);

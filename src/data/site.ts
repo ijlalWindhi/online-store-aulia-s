@@ -14,12 +14,13 @@ export const contact = {
 	region: { id: 'Kabupaten Nganjuk, Jawa Timur, Indonesia', en: 'Nganjuk Regency, East Java, Indonesia' },
 };
 
-export type PageKey = 'home' | 'about' | 'services' | 'portfolio' | 'customerExperience' | 'brandExperience' | 'contact';
+export type PageKey = 'home' | 'about' | 'services' | 'dashboard' | 'portfolio' | 'customerExperience' | 'brandExperience' | 'contact';
 
 export const routes: Record<PageKey, T> = {
 	home: { id: '/', en: '/en/' },
 	about: { id: '/tentang', en: '/en/about' },
 	services: { id: '/layanan', en: '/en/services' },
+	dashboard: { id: '/dashboard', en: '/en/dashboard' },
 	portfolio: { id: '/portofolio', en: '/en/portfolio' },
 	customerExperience: { id: '/customer-experience', en: '/en/customer-experience' },
 	brandExperience: { id: '/brand-experience', en: '/en/brand-experience' },
@@ -33,6 +34,7 @@ export const nav: (NavLink | NavGroup)[] = [
 	{ page: 'home', label: { id: 'Beranda', en: 'Home' } },
 	{ page: 'about', label: { id: 'Tentang', en: 'About Us' } },
 	{ page: 'services', label: { id: 'Layanan', en: 'Services' } },
+	{ page: 'dashboard', label: { id: 'Dashboard', en: 'Dashboard' } },
 	{ page: 'portfolio', label: { id: 'Portofolio', en: 'Portfolio' } },
 	{
 		label: { id: 'Experience', en: 'Experience' },

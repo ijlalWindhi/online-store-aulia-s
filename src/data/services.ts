@@ -2,6 +2,8 @@ import { assertBilingual, type T } from './site.ts';
 
 export type ServicePackage = { slug: string; name: T; startingPrice: string };
 
+export type ServiceCategory = 'graphic-design' | 'ui-ux' | 'website';
+
 export type Service = {
 	slug: string;
 	name: T;
@@ -9,6 +11,10 @@ export type Service = {
 	/** Exactly as approved in PRD §8. Rupiah notation is kept identical in both languages. */
 	startingPrice: string;
 	priceUnit?: T;
+	/** Machine-readable twins of startingPrice and turnaround. The dashboard filters and draws bars from these. */
+	category: ServiceCategory;
+	startingPriceValue: number;
+	turnaroundDays: { min: number; max: number };
 	turnaround: T;
 	revisions: T;
 	scope: T[];
@@ -28,6 +34,9 @@ export const services: Service[] = [
 		},
 		startingPrice: 'Rp40.000',
 		priceUnit: { id: 'per desain', en: 'per design' },
+		category: 'graphic-design',
+		startingPriceValue: 40000,
+		turnaroundDays: { min: 1, max: 2 },
 		turnaround: { id: '1 sampai 2 hari', en: '1 to 2 days' },
 		revisions: twoRounds,
 		scope: [
@@ -48,6 +57,9 @@ export const services: Service[] = [
 			en: 'A poster with one concept in one size, delivered as an image or PDF.',
 		},
 		startingPrice: 'Rp75.000',
+		category: 'graphic-design',
+		startingPriceValue: 75000,
+		turnaroundDays: { min: 2, max: 3 },
 		turnaround: { id: '2 sampai 3 hari', en: '2 to 3 days' },
 		revisions: twoRounds,
 		scope: [
@@ -64,6 +76,9 @@ export const services: Service[] = [
 			en: 'A logo with colors and typography, so your business looks consistent.',
 		},
 		startingPrice: 'Rp250.000',
+		category: 'graphic-design',
+		startingPriceValue: 250000,
+		turnaroundDays: { min: 4, max: 7 },
 		turnaround: { id: '4 sampai 7 hari', en: '4 to 7 days' },
 		revisions: twoRounds,
 		scope: [
@@ -82,6 +97,9 @@ export const services: Service[] = [
 			en: 'Interface design for a website or app before development starts.',
 		},
 		startingPrice: 'Rp375.000',
+		category: 'ui-ux',
+		startingPriceValue: 375000,
+		turnaroundDays: { min: 5, max: 7 },
 		turnaround: { id: '5 sampai 7 hari', en: '5 to 7 days' },
 		revisions: twoRounds,
 		scope: [{ id: 'Maksimal lima layar', en: 'Up to five screens' }],
@@ -98,6 +116,9 @@ export const services: Service[] = [
 			en: 'A one-page website that introduces a product, service, or event.',
 		},
 		startingPrice: 'Rp750.000',
+		category: 'website',
+		startingPriceValue: 750000,
+		turnaroundDays: { min: 5, max: 8 },
 		turnaround: { id: '5 sampai 8 hari', en: '5 to 8 days' },
 		revisions: twoRounds,
 		scope: [{ id: 'Maksimal tujuh bagian', en: 'Up to seven sections' }],
@@ -115,6 +136,9 @@ export const services: Service[] = [
 			en: 'A multi-page website that introduces a business and how to reach it.',
 		},
 		startingPrice: 'Rp1.500.000',
+		category: 'website',
+		startingPriceValue: 1500000,
+		turnaroundDays: { min: 10, max: 14 },
 		turnaround: { id: '10 sampai 14 hari', en: '10 to 14 days' },
 		revisions: twoRounds,
 		scope: [{ id: 'Maksimal lima halaman', en: 'Up to five pages' }],
@@ -132,6 +156,9 @@ export const services: Service[] = [
 			en: 'A website that lists products or services, with ordering through WhatsApp.',
 		},
 		startingPrice: 'Rp2.000.000',
+		category: 'website',
+		startingPriceValue: 2000000,
+		turnaroundDays: { min: 14, max: 21 },
 		turnaround: { id: '14 sampai 21 hari', en: '14 to 21 days' },
 		revisions: twoRounds,
 		scope: [{ id: 'Maksimal 20 produk atau layanan', en: 'Up to 20 products or services' }],
@@ -168,3 +195,14 @@ export const processSteps: T[] = [
 ];
 
 assertBilingual({ services, terms, processSteps }, 'services');
+
+// PRD §8 defines seven services. A bad edit must fail the build, not the dashboard.
+// Empty localized text, including revisions, is already rejected by assertBilingual above.
+if (services.length !== 7) throw new Error(`services: expected seven services, found ${services.length}`);
+if (new Set(services.map((service) => service.slug)).size !== services.length) throw new Error('services: duplicate slug');
+for (const { slug, startingPriceValue, turnaroundDays, scope, deliverables } of services) {
+	if (!Number.isInteger(startingPriceValue) || startingPriceValue <= 0) throw new Error(`services: ${slug} startingPriceValue must be a positive integer`);
+	if (!Number.isInteger(turnaroundDays.min) || turnaroundDays.min < 1) throw new Error(`services: ${slug} turnaroundDays.min must be at least 1`);
+	if (turnaroundDays.max < turnaroundDays.min) throw new Error(`services: ${slug} turnaroundDays.max is below min`);
+	if (!scope.length || !deliverables.length) throw new Error(`services: ${slug} is missing scope or deliverables`);
+}
